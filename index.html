@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#2F5FD0">
+<title>CA Foundation Daily Practice</title>
+<style>
+:root{--bg:#f7f6f2;--fg:#1d1d1b;--mut:#6b6a64;--card:#fff;--bd:#dedcd4;--ac:#2f5fd0;--acbg:#e8eefc;--ok:#1f8a4c;--okbg:#e2f4e9;--bad:#c23b2e;--badbg:#fbe6e3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17171a;--fg:#ecebe6;--mut:#a09f98;--card:#222226;--bd:#38383e;--ac:#7fa2f5;--acbg:#26304a;--ok:#5fd18f;--okbg:#1d3426;--bad:#ff8b7d;--badbg:#3b2220}}
+:root[data-theme="dark"]{--bg:#17171a;--fg:#ecebe6;--mut:#a09f98;--card:#222226;--bd:#38383e;--ac:#7fa2f5;--acbg:#26304a;--ok:#5fd18f;--okbg:#1d3426;--bad:#ff8b7d;--badbg:#3b2220}
+*{box-sizing:border-box}
+html,body{margin:0}body{background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;max-width:760px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px}.sub{color:var(--mut);font-size:14px;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.topics div{padding:6px 0;border-top:1px solid var(--bd);font-size:14px}.topics div:first-child{border-top:0}
+.topics b{display:inline-block;min-width:78px;color:var(--ac)}
+button,input{font:inherit}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:600;cursor:pointer}
+.btn.alt{background:var(--acbg);color:var(--ac)}
+input[type=date]{background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:9px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 4px}
+.tab{flex:0 0 auto;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px}
+.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.q{white-space:pre-wrap;margin:0 0 10px}.n{color:var(--mut);font-size:13px;margin-bottom:4px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin:6px 0;cursor:pointer}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.bad{background:var(--badbg);border-color:var(--bad)}.opt.sel{background:var(--acbg);border-color:var(--ac)}
+.why{font-size:14px;color:var(--mut);margin-top:8px;white-space:pre-wrap}
+.ans{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-top:10px;font-size:14px}
+.err{color:var(--bad);font-size:14px}.score{font-weight:600;margin:10px 0}.mut{color:var(--mut);font-size:14px}
+</style></head><body>
+<h1>CA Foundation daily practice</h1>
+<p class="sub" id="when"></p>
+<p class="sub" id="stk"></p>
+<div class="card topics" id="tp"></div>
+<div class="row"><input type="date" id="dt" min="2026-10-01" max="2027-01-02"><button class="btn" id="go">Generate today’s practice</button></div>
+<div class="tabs" id="tabs"></div>
+<div id="panel"></div>
+<script>
+const P=[["2026-10-21","Ch 1 Theoretical framework","Ch 1 Indian regulatory framework","Ratio & proportion","Ch 1 Nature & scope, basic problems of an economy"],
+["2026-10-22","Ch 2 Journal, ledger, subsidiary books, cash book","Contract: nature, offer & acceptance","Indices","Ch 2 Law of demand, elasticity"],
+["2026-10-23","Ch 2 Trial balance, rectification of errors","Contract: consideration","Logarithms","Ch 2 Consumer behaviour"],
+["2026-10-24","Ch 3 Bank reconciliation statement","Contract: capacity, free consent","Linear equations","Ch 2 Supply, equilibrium, MCQs"],
+["2026-10-25"],
+["2026-10-26","Ch 4 Inventories","Contract: legality, void agreements","Quadratic & cubic equations","Ch 3 Production function, laws"],
+["2026-10-27","Ch 5 Depreciation: SLM, WDV","Contract: performance, discharge","Linear inequalities","Ch 3 Cost concepts"],
+["2026-10-28","Ch 5 Depreciation: changes, disposal, practice","Contract: breach & remedies","Mathematics of finance: SI, CI","Ch 3 Cost curves, practice"],
+["2026-10-29","Ch 6 Bills of exchange & promissory notes: basics","Contingent & quasi contracts","Mathematics of finance: annuity, EMI","Ch 4 Types of markets, perfect competition"],
+["2026-10-30","Ch 6 Bills: dishonour, renewal, retirement","Indemnity & guarantee","Permutations & combinations","Ch 4 Monopoly"],
+["2026-10-31","Ch 7 Final accounts: trading, P&L","Bailment & pledge","Sequence & series: AP","Ch 4 Monopolistic competition, oligopoly"],
+["2026-11-01"],
+["2026-11-02","Ch 7 Final accounts: balance sheet, adjustments","Agency","Sequence & series: GP","Ch 4 Price-output practice MCQs"],
+["2026-11-03","Ch 7 Manufacturing entities, adjustment problems","Contract case studies","Sets","Ch 5 Business cycles"],
+["2026-11-04","Ch 8 NPO: receipts & payments","Sale of Goods: formation, conditions & warranties","Relations & functions","Ch 6 National income accounting"],
+["2026-11-05","Ch 8 NPO: income & expenditure, balance sheet","Sale of Goods: ownership & delivery","Limits & continuity","Ch 6 Keynesian theory"],
+["2026-11-06","Ch 8 NPO practice + Ch 9 Incomplete records: statement of affairs","Sale of Goods: unpaid seller, cases","Differentiation","Ch 6 Practice MCQs"],
+["2026-11-07","Ch 9 Conversion method, practice","Partnership Act: nature, relations of partners","Integration","Ch 7 Fiscal functions, centre & state finance"],
+["2026-11-08"],
+["2026-11-09","Ch 10 Partnership: interest, drawings, goodwill","Partnership Act: registration, dissolution","Maxima/minima, calculus practice","Ch 7 Market failure, government intervention"],
+["2026-11-10","Ch 10 Admission of a partner","LLP Act","LR: number series, coding-decoding, odd man out","Ch 7 Budget making, public debt, fiscal policy"],
+["2026-11-11","Ch 10 Retirement of a partner","LLP practice + case studies","LR: direction tests","Ch 8 Money demand theories, money supply"],
+["2026-11-12","Ch 10 Death of a partner","Companies Act: types, incorporation","LR: seating arrangements","Ch 8 Monetary policy"],
+["2026-11-13","Ch 10 Dissolution of firms + LLP accounts","Companies Act: MOA, AOA, prospectus","LR: blood relations","Ch 9 Theories of international trade"],
+["2026-11-14","Ch 11 Introduction, issue of shares","Companies Act: share capital, directors","Statistics: data representation, sampling","Ch 9 Trade policy instruments, trade negotiations"],
+["2026-11-15"],
+["2026-11-16","Ch 11 Forfeiture, re-issue of shares","Companies Act: meetings, practice","Central tendency","Ch 9 Exchange rate, international capital movements"],
+["2026-11-17","Ch 11 Issue of debentures","NI Act: types, parties","Dispersion","Ch 10 Indian economy: part 1"],
+["2026-11-18","Ch 11 Bonus & rights issue","NI Act: negotiation, endorsement, dishonour","Probability","Ch 10 Indian economy: part 2"],
+["2026-11-19","Ch 11 Redemption of preference shares","Revision: Contract cases","Binomial & Poisson","MCQs: Ch 1–4"],
+["2026-11-20","Ch 11 Redemption of debentures","Revision: Sale of Goods, Partnership cases","Normal distribution","MCQs: Ch 5–7"],
+["2026-11-21","Mixed problems: Ch 1–7","Revision: LLP, Companies Act","Correlation","MCQs: Ch 8–10"],
+["2026-11-22"],
+["2026-11-23","Mixed problems: Ch 8–11","Revision: NI Act, Ch 1","Regression, index numbers","Mixed MCQ set"],
+["2026-11-24","Full-syllabus numericals set","Full-syllabus case studies","Full Quant timed test","Full Economics timed test"],
+["2026-11-25","Full-syllabus test (all 4 papers) + gap list for Revision 2","Full-syllabus test (all 4 papers)","Full-syllabus test (all 4 papers)","Full-syllabus test (all 4 papers)"],
+["2026-11-26","Ch 1–2 Framework, process","Ch 1 + Contract: formation, consideration","Ratio, indices, logs","Ch 1–2 Nature, demand, supply, consumer behaviour"],
+["2026-11-27","Ch 3–4 BRS, inventories","Contract: consent, legality, performance","Equations, inequalities","Ch 3 Production & cost"],
+["2026-11-28","Ch 5 Depreciation","Contract: breach, contingent & quasi","Mathematics of finance, permutations & combinations","Ch 4 Market structures"],
+["2026-11-29"],
+["2026-11-30","Ch 6 Bills of exchange","Indemnity, bailment, pledge, agency","Sequence & series, sets, relations & functions","Ch 5–6 Business cycles, national income"],
+["2026-12-01","Ch 7 Final accounts incl. manufacturing","Sale of Goods","Limits, continuity, calculus","Ch 6 Keynesian theory"],
+["2026-12-02","Ch 7 Final accounts problems","Partnership Act","Logical reasoning: all four types","Ch 7 Public finance"],
+["2026-12-03","Ch 8 NPO","LLP Act","Data representation, sampling, central tendency","Ch 8 Money market"],
+["2026-12-04","Ch 9 Incomplete records","Companies Act: incorporation, MOA, AOA, prospectus","Dispersion, probability","Ch 9 International trade"],
+["2026-12-05","Ch 10 Partnership: goodwill, admission","Companies Act: share capital, directors, meetings","Theoretical distributions","Ch 10 Indian economy"],
+["2026-12-06"],
+["2026-12-07","Ch 10 Retirement, death, dissolution, LLP accounts","NI Act","Correlation, regression, index numbers","MCQ set 1: Ch 1–3"],
+["2026-12-08","Ch 11 Shares","Contract case studies","Formula sheet: Part A","MCQ set 2: Ch 4–5"],
+["2026-12-09","Ch 11 Debentures, bonus & rights issue","Sale of Goods cases","Formula sheet: statistics","MCQ set 3: Ch 6–7"],
+["2026-12-10","Ch 11 Redemption of preference shares & debentures","Partnership/LLP cases","Timed set: Part A","MCQ set 4: Ch 8–9"],
+["2026-12-11","Redo wrong answers: Ch 1–6","Companies Act cases","Timed set: LR","MCQ set 5: Ch 10 + mixed"],
+["2026-12-12","Redo wrong answers: Ch 7–11","NI Act + Ch 1 cases","Timed set: statistics","MCQ set 6: mixed"],
+["2026-12-13"],
+["2026-12-14","Mixed numericals set","Mixed case studies","Timed set: mixed","MCQ set 7: mixed"],
+["2026-12-15","Mixed numericals set","Mixed case studies","Timed set: mixed","MCQ set 8: mixed"]];
+const M=new Map(P.map(r=>[r[0],r]));
+const FULL={acc:"All accounting chapters (Ch 1–11): framework, process, subsidiary books and cash book, BRS, inventories, depreciation, bills of exchange, final accounts incl. manufacturing, NPO, incomplete records, partnership accounts, LLP accounts, company accounts",law:"Ch 1 Indian Regulatory Framework, Indian Contract Act, Sale of Goods Act, Partnership Act, LLP Act, Companies Act, Negotiable Instruments Act",quant:"Business Maths, Logical Reasoning, Statistics (all chapters, incl. permutations & combinations and sampling)",eco:"Business Economics (all 10 chapters, incl. consumer behaviour, Keynesian theory, market failure, money, international trade, Indian economy)"};
+const SUB={maths:{name:"Maths",n:30,kind:"mcq",tk:"quant",full:"Quantitative Aptitude (Business Mathematics, Logical Reasoning, Statistics)"},
+eco:{name:"Economics",n:30,kind:"mcq",tk:"eco",full:"Business Economics"},
+acc:{name:"Accounts",n:4,kind:"w",tk:"acc",full:"Principles and Practice of Accounting"},
+law:{name:"Law",n:4,kind:"w",tk:"law",full:"Business Laws (Indian Regulatory Framework, Contract, Sale of Goods, Partnership, LLP, Companies, Negotiable Instruments)"}};
+const ORDER=["maths","eco","acc","law"];
+const $=s=>document.querySelector(s);
+function h(t,a,...c){const e=document.createElement(t);for(const k in a||{}){if(k==="class")e.className=a[k];else if(k.startsWith("on"))e[k]=a[k];else e.setAttribute(k,a[k])}for(const x of c.flat())if(x!=null)e.append(x.nodeType?x:document.createTextNode(x));return e}
+function addDays(s,n){const t=new Date(s+"T00:00:00Z");t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)}
+const now=new Date(),today=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+function topicsFor(d){
+ if(d>"2026-12-15")return{label:"Mock and final days: full syllabus",t:FULL};
+ let note="";if(d<"2026-10-21"){d="2026-10-21";note="Your plan starts on 21 Oct, so this shows Day 1 topics. "}
+ const phase=d<="2026-11-25"?"Revision 1":"Revision 2";const r=M.get(d);
+ if(r&&r.length>1)return{label:note+phase,t:{acc:r[1],law:r[2],quant:r[3],eco:r[4]}};
+ const t={acc:[],law:[],quant:[],eco:[]};
+ for(let i=1;i<=6;i++){const x=M.get(addDays(d,-i));if(x&&x.length>1){t.acc.push(x[1]);t.law.push(x[2]);t.quant.push(x[3]);t.eco.push(x[4])}}
+ for(const k in t)t[k]=t[k].join("; ")||FULL[k];
+ return{label:phase+": Sunday weekly test, covering this week’s topics",t};
+}
+const key=d=>"ca-practice-"+d;
+function load(d){try{const v=localStorage.getItem(key(d));if(v)return Object.assign(fresh(d),JSON.parse(v))}catch(e){}return fresh(d)}
+function fresh(d){return{date:d,data:{maths:null,eco:null,acc:null,law:null},sel:{maths:{},eco:{}},rev:{acc:{},law:{}},tm:{},notes:""}}
+let st=load(today),cur=topicsFor(today),tab="maths",busy={},err={};
+function save(){try{localStorage.setItem(key(st.date),JSON.stringify({data:st.data,sel:st.sel,rev:st.rev,tm:st.tm,notes:st.notes}))}catch(e){}}
+
+function mcqPrompt(k,tp,n,part){const c=SUB[k];
+ return `You are an ICAI CA Foundation question setter. Subject: ${c.full}. Today's topics: ${tp}.
+Write ${n} multiple-choice questions strictly on these topics, in ICAI exam style, difficulty: ${diff()}. ${k==="maths"?"Mostly numerical questions; compute every answer carefully and double-check it.":"Mix conceptual and applied questions."} ${part===2?"This is batch 2 of 2: cover different sub-topics and angles than an obvious first set.":"This is batch 1 of 2."} Random seed: ${Math.random().toString(36).slice(2,8)}.
+Each question has exactly 4 options. Spread the correct answer positions randomly. Use plain text only (x^2, sqrt(x)), no markdown or LaTeX.
+Return ONLY a JSON array: [{"q":"question","o":["A","B","C","D"],"a":0,"w":"one or two line explanation","t":"short topic name, max 5 words"}] where a is the 0-based index of the correct option.`}
+function wPrompt(k,tp){const c=SUB[k];
+ return k==="acc"?`You are an ICAI CA Foundation question setter. Subject: ${c.full}. Today's topics: ${tp}.
+Write 4 written practice questions on these topics (numerical problems with figures where the topic allows, 5 to 8 marks each, difficulty: ${diff()}). Give a complete model solution with working steps in plain text. Check all arithmetic. No markdown or LaTeX. Random seed: ${Math.random().toString(36).slice(2,8)}.
+Return ONLY a JSON array: [{"q":"question","m":"marks","a":"model solution"}].`
+ :`You are an ICAI CA Foundation question setter. Subject: ${c.full}. Today's topics: ${tp}.
+Write 4 case-study style questions on these topics (short fact situation, then 1 to 2 questions to answer with reasoning, as in the ICAI Law paper), difficulty: ${diff()}. Give a model answer citing the relevant sections and principles in plain text. No markdown. Random seed: ${Math.random().toString(36).slice(2,8)}.
+Return ONLY a JSON array: [{"q":"fact situation and question","m":"marks","a":"model answer"}].`}
+async function ask(sample,p){const v=await sample.json(p,{cache:false});if(!Array.isArray(v))throw new Error("Unexpected reply, please retry.");return v}
+async function genSub(k,sample){
+ const c=SUB[k],tp=cur.t[c.tk];busy[k]=1;err[k]="";render();
+ try{let out;
+  if(c.kind==="mcq"){out=(await Promise.all((prov()==="g"?[1]:[1,2]).map(i=>ask(sample,mcqPrompt(k,tp,prov()==="g"?30:15,i))))).flat().filter(x=>x&&x.q&&Array.isArray(x.o)&&x.o.length===4&&Number.isInteger(x.a)&&x.a>=0&&x.a<4)}
+  else out=(await ask(sample,wPrompt(k,tp))).filter(x=>x&&x.q&&x.a);
+  if(!out.length)throw new Error("No usable questions came back, please retry.");
+  st.data[k]=out;st.sel[k]=st.sel[k]&&c.kind==="mcq"?{}:st.sel[k];save();
+ }catch(e){err[k]=e&&e.code==="not_granted"?"API key was rejected. Check it in Settings.":e&&e.code==="rate_limited"?"Too many requests right now. Wait a minute and retry.":(e&&e.message)||"Could not generate. Please retry."}
+ busy[k]=0;render();
+}
+async function sampleOrNull(){return keyNow()?{json:callApi}:null}
+async function genAll(){
+ const s=await sampleOrNull();
+ if(!s){err.all="Add your API key in Settings first.";render();return}
+ err.all="";const nt=st.notes;st=fresh(st.date);st.notes=nt;
+ await genSub("acc",s);
+ if(err.acc&&/rejected/.test(err.acc))return;
+ if(prov()==="g"){for(const k of ["maths","eco","law"])await genSub(k,s)}else await Promise.all(["law","maths","eco"].map(k=>genSub(k,s)));
+ if(!ls("ca-tf-"+st.date,[]).length){try{lsSet("ca-tf-"+st.date,await tfData(cur.t.acc))}catch(e){}}
+}
+async function retry(k){const s=await sampleOrNull();if(s)genSub(k,s)}
+
+function mcqCard(k,i){
+ const q=st.data[k][i],sel=st.sel[k],done=sel[i]!=null;
+ const box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)),h("p",{class:"q"},q.q));
+ q.o.forEach((o,j)=>{
+  let cls="opt";if(done){if(j===q.a)cls+=" ok";else if(j===sel[i])cls+=" bad"}
+  box.append(h("button",{class:cls,onclick:()=>{if(sel[i]!=null)return;sel[i]=j;record(k,q,j===q.a);save();box.replaceWith(mcqCard(k,i));score(k);stk()}},"ABCD"[j]+". "+o));
+ });
+ if(done&&q.w)box.append(h("div",{class:"why"},q.w));
+ box.append(doubtUi(k,i,q));
+ return box;
+}
+function score(k){const el=$("#score");if(!el||!st.data[k]||!st.sel[k])return;const qs=st.data[k],s=st.sel[k];let r=0;for(const i in s)if(qs[i]&&s[i]===qs[i].a)r++;
+ const tm=st.tm[k];let ts="";if(tm){const fin=Object.keys(s).length>=qs.length,ms=(fin?tm.e:Date.now())-tm.s;ts=" · "+Math.floor(ms/60000)+":"+String(Math.floor(ms/1000)%60).padStart(2,"0")+(fin?" (finished)":"")}
+ el.textContent="Score "+r+" / "+Object.keys(s).length+" answered, out of "+qs.length+ts}
+function wCard(k,i){
+ const q=st.data[k][i],open=st.rev[k][i];
+ const box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)+(q.m?" · "+q.m+" marks":"")),h("p",{class:"q"},q.q),
+  h("button",{class:"btn alt",onclick:()=>{st.rev[k][i]=!st.rev[k][i];save();box.replaceWith(wCard(k,i))}},open?"Hide answer":"Show answer"));
+ if(open)box.append(h("div",{class:"ans"},q.a));
+ box.append(doubtUi(k,i,q));
+ return box;
+}
+function ls(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function record(k,q,ok){
+ if(!ok)addWrong(k,q);
+ const w=ls("ca-weak",{}),t=(q.t||cur.t[SUB[k].tk]).slice(0,60),x=w[t]||[0,0];x[1]++;if(!ok)x[0]++;w[t]=x;lsSet("ca-weak",w);
+ const days=ls("ca-days",{});days[st.date]=(days[st.date]||0)+1;lsSet("ca-days",days);
+ const ss=ls("ca-stats",{}),sd=ss[st.date]=ss[st.date]||{},sx=sd[k]=sd[k]||[0,0];sx[1]++;if(ok)sx[0]++;lsSet("ca-stats",ss);
+ const tm=st.tm[k]=st.tm[k]||{s:Date.now()};tm.e=Date.now();
+}
+function streak(){const days=ls("ca-days",{});let d=today,n=0;if((days[d]||0)<10)d=addDays(d,-1);while((days[d]||0)>=10){n++;d=addDays(d,-1)}return n}
+function stk(){const n=streak(),c=(ls("ca-days",{})[today]||0);$("#stk").textContent="Streak: "+n+" day"+(n===1?"":"s")+" · today "+c+"/10 MCQs (10 a day keeps the streak)"}
+function weakPanel(p){
+ const w=ls("ca-weak",{}),rows=Object.entries(w).filter(([,x])=>x[1]>=2).sort((a,b)=>b[1][0]/b[1][1]-a[1][0]/a[1][1]);
+ if(!rows.length){p.append(h("div",{class:"card mut"},"Answer some MCQs first. A topic shows up here once you have attempted at least 2 questions on it."));return}
+ rows.slice(0,15).forEach(([t,x])=>p.append(h("div",{class:"card"},h("b",{},t),h("div",{class:"mut"},x[0]+" wrong of "+x[1]+" ("+Math.round(100*x[0]/x[1])+"% wrong)"))));
+ p.append(h("button",{class:"btn alt",onclick:()=>{lsSet("ca-weak",{});render()}},"Clear weak-topic history"));
+}
+async function callApi(p){
+ if(prov()==="g")return JSON.parse(cleanJ(await gemini(p,true)));
+ const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":keyNow(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:ls("ca-model","claude-sonnet-5-5"),max_tokens:8000,messages:[{role:"user",content:p}]})});
+ if(!r.ok){let m="";try{m=(await r.json()).error.message}catch(e){}const e=new Error(m||("Request failed ("+r.status+")"));e.code=r.status===401?"not_granted":r.status===429?"rate_limited":"http";throw e}
+ const d=await r.json();const t=d.content.map(x=>x.text||"").join("");
+ return JSON.parse(t.replace(/```json|```/g,"").trim());
+}
+function setPanel(p){
+ const st1="width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)";
+ const k=h("input",{type:"password",placeholder:"sk-ant-...",value:ls("ca-key",""),style:st1});
+ const m=h("input",{type:"text",value:ls("ca-model","claude-sonnet-5-5"),style:st1});
+ const msg=h("p",{class:"mut"},"");
+ p.append(h("div",{class:"card"},h("b",{},"Anthropic API key"),h("p",{class:"mut"},"Stored only on this phone. Create one at console.anthropic.com. Usage is billed to your API account."),k,h("p",{},h("b",{},"Model")),m,h("p",{},h("button",{class:"btn",onclick:()=>{lsSet("ca-key",k.value.trim());lsSet("ca-model",m.value.trim()||"claude-sonnet-5-5");msg.textContent="Saved."}},"Save")),msg));
+ p.append(langCard(),remCard(),qnCard(),prepCard(),backupCard());
+}
+let DB={},nbusy=false,nerr="";
+const INP="width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)";
+const NAMES={acc:"Accounts",law:"Law",quant:"Quant",eco:"Economics"},IDX={acc:1,law:2,quant:3,eco:4};
+function diff(){return ls("ca-diff","exam level")}
+async function callText(p){
+ if(prov()==="g")return gemini(p,false);
+ const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":keyNow(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:ls("ca-model","claude-sonnet-5-5"),max_tokens:4000,messages:[{role:"user",content:p}]})});
+ if(!r.ok){let m="";try{m=(await r.json()).error.message}catch(e){}throw new Error(r.status===401?"API key was rejected. Check it in Settings.":(m||"Request failed ("+r.status+")"))}
+ const d=await r.json();return d.content.map(x=>x.text||"").join("").trim();
+}
+function doubtPrompt(q,t){const lang=ls("ca-lang","English");
+ return `You are a friendly CA Foundation tutor. Reply in ${lang}, in plain text without markdown or LaTeX, short and clear.\nQuestion: ${q.q}\n`+(q.o?"Options: "+q.o.map((o,i)=>"ABCD"[i]+". "+o).join(" | ")+"\nCorrect answer: "+"ABCD"[q.a]+"\n":"Model answer: "+q.a+"\n")+"Student's doubt: "+(t||"Explain this step by step and why the other options are wrong.")}
+function doubtUi(k,i,q){
+ const key=k+i,s=DB[key]||(DB[key]={open:false,out:"",busy:false,q:""}),w=h("div",{});
+ const draw=()=>{w.replaceChildren();w.append(starBtn(k,q));
+  if(!s.open){w.append(h("button",{class:"btn alt",style:"margin-top:8px",onclick:()=>{s.open=true;draw()}},"Ask a doubt"));return}
+  const inp=h("input",{type:"text",placeholder:"Type your doubt, or leave blank for a step-by-step explanation",style:INP+";margin-top:8px"});inp.value=s.q;
+  w.append(inp,h("button",{class:"btn alt",style:"margin-top:8px",onclick:async()=>{
+   if(s.busy)return;if(!keyNow()){s.out="Add your API key in Settings first.";draw();return}
+   s.q=inp.value;s.busy=true;s.out="";draw();
+   try{s.out=await callText(doubtPrompt(q,s.q))}catch(e){s.out="Could not get an answer: "+(e.message||"try again")}
+   s.busy=false;draw()}},s.busy?"Thinking…":"Ask Claude"));
+  if(s.out)w.append(h("div",{class:"ans"},s.out));
+ };
+ draw();return w;
+}
+function planPanel(p){
+ const dn=ls("ca-done",{});
+ const box=(d,k,txt)=>{const on=dn[d]&&dn[d][k];return h("button",{class:"opt"+(on?" ok":""),onclick:()=>{const x=ls("ca-done",{});x[d]=x[d]||{};x[d][k]=!x[d][k];lsSet("ca-done",x);render()}},(on?"✓ ":"○ ")+NAMES[k]+": "+txt)};
+ const t=h("div",{class:"card"},h("b",{},"Topics for "+st.date),h("div",{class:"mut"},"Tap a topic when you finish it."));
+ for(const k of Object.keys(NAMES))t.append(box(st.date,k,cur.t[k]));
+ p.append(t);
+ const miss=[];
+ for(let d="2026-10-21";d<today&&d<="2026-12-15";d=addDays(d,1)){const r=M.get(d);if(!r||r.length<2)continue;const left=Object.keys(NAMES).filter(k=>!(dn[d]&&dn[d][k]));if(left.length)miss.push([d,r,left])}
+ if(!miss.length){p.append(h("div",{class:"card mut"},"Nothing missed so far."));return}
+ const m=h("div",{class:"card"},h("b",{},"Not ticked yet ("+miss.length+" day"+(miss.length>1?"s":"")+")"),h("div",{class:"mut"},"Showing the 10 most recent days."));
+ miss.slice(-10).reverse().forEach(([d,r,left])=>{m.append(h("div",{style:"margin-top:10px;font-weight:600"},d));left.forEach(k=>m.append(box(d,k,r[IDX[k]])))});
+ p.append(m);
+}
+function progPanel(p){
+ const left=Math.ceil((new Date("2027-01-03T00:00:00")-new Date(today+"T00:00:00"))/864e5);
+ p.append(h("div",{class:"card"},h("b",{},left+" days")," to the first paper (3 Jan 2027)"));
+ const ss=ls("ca-stats",{}),tot={maths:[0,0],eco:[0,0]};
+ for(const d in ss)for(const k in ss[d]){tot[k][0]+=ss[d][k][0];tot[k][1]+=ss[d][k][1]}
+ const pc=a=>a[1]?Math.round(100*a[0]/a[1])+"% ("+a[0]+" of "+a[1]+")":"no data yet";
+ p.append(h("div",{class:"card"},h("b",{},"Overall accuracy"),h("div",{},"Maths: "+pc(tot.maths)),h("div",{},"Economics: "+pc(tot.eco))));
+ const card=h("div",{class:"card"},h("b",{},"Last 7 days"));
+ for(let i=6;i>=0;i--){const d=addDays(today,-i),s=ss[d]||{};let r=0,t=0;for(const k in s){r+=s[k][0];t+=s[k][1]}
+  const w=t?Math.round(100*r/t):0;
+  card.append(h("div",{style:"margin-top:8px;font-size:14px"},d.slice(5)+": "+(t?r+" of "+t+" correct":"no practice"),h("div",{style:"height:8px;border-radius:4px;background:var(--bd);margin-top:3px"},h("div",{style:"height:8px;border-radius:4px;background:var(--ok);width:"+w+"%"}))))}
+ p.append(card);
+}
+function notesPrompt(){const t=cur.t;
+ return `You are a CA Foundation tutor. Reply in ${ls("ca-lang","English")}. Write a one-page revision sheet in plain text (no markdown symbols; use CAPITAL LETTERS for headings and "-" for bullets) for today's topics. For each subject give only what is needed for the exam: key definitions, formulas written in plain text, rules, and one quick example where useful.\nAccounts: ${t.acc}\nLaw: ${t.law}\nQuant: ${t.quant}\nEconomics: ${t.eco}`}
+function notesPanel(p){
+ const c=h("div",{class:"card"},h("button",{class:"btn",onclick:async()=>{
+  if(nbusy)return;if(!keyNow()){nerr="Add your API key in Settings first.";render();return}
+  nbusy=true;nerr="";render();
+  try{st.notes=await callText(notesPrompt());save()}catch(e){nerr=e.message||"Could not make notes. Try again."}
+  nbusy=false;render()}},nbusy?"Writing…":(st.notes?"Rewrite short notes":"Make short notes for today")));
+ if(nerr)c.append(h("p",{class:"err"},nerr));
+ p.append(c);
+ if(st.notes)p.append(h("div",{class:"card"},h("div",{class:"q"},st.notes)));
+}
+function langCard(){
+ const s=h("select",{style:INP},...["English","Hindi","Hinglish"].map(x=>h("option",{value:x},x)));
+ s.value=ls("ca-lang","English");s.onchange=()=>lsSet("ca-lang",s.value);
+ return h("div",{class:"card"},h("b",{},"Language for doubts and notes"),h("p",{},s));
+}
+function remCard(){
+ const tm=h("input",{type:"time",value:ls("ca-rem","21:00"),style:INP}),msg=h("p",{class:"mut"},"");
+ const bridge=()=>window.AndroidBridge;
+ return h("div",{class:"card"},h("b",{},"Daily reminder"),h("p",{class:"mut"},"A notification at this time every day. If you restart the phone, set it again."),tm,
+  h("p",{},h("button",{class:"btn",onclick:()=>{if(!bridge()){msg.textContent="Reminders work only in the Android app.";return}const [a,b]=tm.value.split(":");bridge().setReminder(+a,+b);lsSet("ca-rem",tm.value);msg.textContent="Reminder set for "+tm.value+" every day."}},"Set reminder")," ",
+  h("button",{class:"btn alt",onclick:()=>{if(bridge()){bridge().cancelReminder();msg.textContent="Reminder turned off."}}},"Turn off")),msg);
+}
+let mock=null,tmr=null,cidx=0,cflip=false,cbusy=false,cerr="",lastW="";
+const GAPS=[1,3,7];
+function fmt(ms){const s=Math.ceil(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function addWrong(k,q){const w=ls("ca-wrong",[]);if(w.some(x=>x.q.q===q.q))return;w.push({k,q,step:0,due:addDays(today,1)});lsSet("ca-wrong",w)}
+function redoPanel(p){
+ const all=ls("ca-wrong",[]),due=all.filter(x=>x.due<=today);
+ p.append(h("div",{class:"card"},h("b",{},due.length+" due today"),h("div",{class:"mut"},all.length+" in your notebook. Right answers move a question to 3 days, then 7 days, then it leaves. A wrong answer sends it back to tomorrow.")));
+ due.forEach(x=>p.append(redoCard(x)));
+}
+function redoCard(x){
+ const q=x.q,box=h("div",{class:"card"},h("div",{class:"n"},SUB[x.k].name+(q.t?" · "+q.t:"")),h("p",{class:"q"},q.q));
+ q.o.forEach((o,j)=>box.append(h("button",{class:"opt",onclick:()=>{
+  if(box.querySelector(".opt").disabled)return;
+  const ok=j===q.a,w=ls("ca-wrong",[]),i=w.findIndex(y=>y.q.q===q.q);
+  if(i>=0){if(ok){w[i].step++;if(w[i].step>=GAPS.length)w.splice(i,1);else w[i].due=addDays(today,GAPS[w[i].step])}else{w[i].step=0;w[i].due=addDays(today,1)}lsSet("ca-wrong",w)}
+  box.querySelectorAll(".opt").forEach((b,n)=>{b.disabled=true;if(n===q.a)b.classList.add("ok");else if(n===j)b.classList.add("bad")});
+  box.append(h("div",{class:"why"},(ok?"Correct. ":"Wrong. ")+(q.w||"")))}},"ABCD"[j]+". "+o)));
+ return box;
+}
+function starBtn(k,q){
+ const on=()=>ls("ca-marks",[]).some(x=>x.q.q===q.q);
+ const b=h("button",{class:"btn alt",style:"margin:8px 8px 0 0",onclick:()=>{let m=ls("ca-marks",[]);if(on())m=m.filter(x=>x.q.q!==q.q);else m.push({k,q});lsSet("ca-marks",m);b.textContent=on()?"★ Saved":"☆ Save"}},on()?"★ Saved":"☆ Save");
+ return b;
+}
+function savedPanel(p){
+ const ms=ls("ca-marks",[]);
+ if(!ms.length){p.append(h("div",{class:"card mut"},"Nothing saved yet. Tap Save on any question."));return}
+ ms.forEach(x=>{const q=x.q,box=h("div",{class:"card"},h("div",{class:"n"},SUB[x.k].name),h("p",{class:"q"},q.q));
+  if(q.o){q.o.forEach((o,j)=>box.append(h("div",{class:"opt"+(j===q.a?" ok":"")},"ABCD"[j]+". "+o)));if(q.w)box.append(h("div",{class:"why"},q.w))}else box.append(h("div",{class:"ans"},q.a));
+  box.append(h("button",{class:"btn alt",style:"margin-top:8px",onclick:()=>{lsSet("ca-marks",ls("ca-marks",[]).filter(y=>y.q.q!==q.q));render()}},"Remove"));p.append(box)});
+}
+async function genCards(){
+ if(!keyNow()){cerr="Add your API key in Settings first.";render();return}
+ cbusy=true;cerr="";render();
+ try{const t=cur.t;
+  const v=await callApi(`You are a CA Foundation tutor. Make 15 flashcards for today's topics in ${ls("ca-lang","English")}. Cover formulas, definitions, section numbers and rules, one fact per card. Plain text only. Return ONLY a JSON array [{"f":"front","b":"back"}].\nAccounts: ${t.acc}\nLaw: ${t.law}\nQuant: ${t.quant}\nEconomics: ${t.eco}`);
+  if(!Array.isArray(v))throw new Error("Unexpected reply, please retry.");
+  lsSet("ca-cards-"+st.date,v.filter(x=>x&&x.f&&x.b));cidx=0;cflip=false;
+ }catch(e){cerr=e.message||"Could not make cards."}
+ cbusy=false;render();
+}
+function cardsPanel(p){
+ const cs=ls("ca-cards-"+st.date,[]);
+ p.append(h("div",{class:"card"},h("button",{class:"btn",onclick:()=>{if(!cbusy)genCards()}},cbusy?"Making cards…":(cs.length?"Make new cards":"Make flashcards for today")),cerr?h("p",{class:"err"},cerr):null));
+ if(!cs.length)return;
+ cidx=Math.min(cidx,cs.length-1);const c=cs[cidx];
+ p.append(h("div",{class:"card",style:"min-height:150px;text-align:center;cursor:pointer",onclick:()=>{cflip=!cflip;render()}},h("div",{class:"n"},"Card "+(cidx+1)+" of "+cs.length+(cflip?" · answer":" · tap to flip")),h("p",{class:"q"},cflip?c.b:c.f)));
+ p.append(h("div",{class:"row"},h("button",{class:"btn alt",onclick:()=>{cidx=(cidx-1+cs.length)%cs.length;cflip=false;render()}},"Previous"),h("button",{class:"btn",onclick:()=>{cidx=(cidx+1)%cs.length;cflip=false;render()}},"Next")));
+}
+function tickTimer(){if(!tmr)return;const l=tmr.end-Date.now();if(l<=0){stopTimer(true);return}const d=$("#tdisp");if(d)d.textContent=fmt(l)}
+function stopTimer(done){
+ if(!tmr)return;const mins=done?tmr.len:Math.floor((Date.now()-(tmr.end-tmr.len*60000))/60000);
+ if(mins>0){const sd=ls("ca-study",{});sd[today]=(sd[today]||0)+mins;lsSet("ca-study",sd);const ss2=ls("ca-ssub",{}),o=ss2[today]=ss2[today]||{},sj=tmr.subj||"other";o[sj]=(o[sj]||0)+mins;lsSet("ca-ssub",ss2)}
+ if(tmr.focus&&window.AndroidBridge)AndroidBridge.focusOff();
+ tmr=null;render();
+}
+function timerPanel(p){
+ const sd=ls("ca-study",{});let wk=0;for(let i=0;i<7;i++)wk+=sd[addDays(today,-i)]||0;
+ const sel=h("select",{style:INP},...[25,50,90].map(n=>h("option",{value:n},n+" minutes"))),fc=h("input",{type:"checkbox"}),sj=h("select",{style:INP},...Object.entries(SJ).map(([k,v])=>h("option",{value:k},v)));
+ const c=h("div",{class:"card"},h("b",{},"Study timer"),h("div",{class:"mut"},"Today "+(sd[today]||0)+" min · last 7 days "+(Math.round(wk/6)/10)+" hours"));
+ if(tmr)c.append(h("div",{id:"tdisp",style:"font-size:44px;font-weight:700;text-align:center;margin:10px 0"},fmt(tmr.end-Date.now())),h("button",{class:"btn alt",onclick:()=>stopTimer(false)},"Stop and save time"));
+ else c.append(h("p",{},sel),h("p",{},sj),h("label",{class:"mut"},fc," Focus mode: pin the app on screen (Android may ask you to confirm)"),h("p",{},h("button",{class:"btn",onclick:()=>{const len=+sel.value;tmr={end:Date.now()+len*60000,len,focus:fc.checked,subj:sj.value};if(fc.checked&&window.AndroidBridge)AndroidBridge.focusOn();render()}},"Start")));
+ p.append(c);
+}
+function mockPanel(p){
+ if(mock&&mock.busy){p.append(h("div",{class:"card mut"},"Writing 30 questions… this takes up to a minute."));return}
+ if(mock&&mock.qs)return mock.done?mockResult(p):mockRun(p);
+ const kS=h("select",{style:INP},h("option",{value:"maths"},"Maths"),h("option",{value:"eco"},"Economics")),
+ sS=h("select",{style:INP},h("option",{value:"today"},"Today’s topics (the week’s topics on Sunday)"),h("option",{value:"full"},"Full syllabus")),
+ mS=h("select",{style:INP},h("option",{value:"45"},"45 minutes"),h("option",{value:"30"},"30 minutes"),h("option",{value:"60"},"60 minutes"));
+ p.append(h("div",{class:"card"},h("b",{},"Mock test"),h("div",{class:"mut"},"30 questions, +1 for right and −0.25 for wrong. The timer starts when the questions appear."),h("p",{},kS),h("p",{},sS),h("p",{},mS),h("button",{class:"btn",onclick:()=>startMock(kS.value,sS.value,+mS.value)},"Start mock"),mock&&mock.err?h("p",{class:"err"},mock.err):null));
+ const hs=ls("ca-mocks",[]).slice(-5).reverse();
+ if(hs.length){const c=h("div",{class:"card"},h("b",{},"Recent mocks"));hs.forEach(x=>c.append(h("div",{class:"mut",style:"margin-top:6px"},x.date+" · "+SUB[x.k].name+" · "+(x.scope==="full"?"full syllabus":"topics")+": "+x.score.toFixed(2)+" / "+x.max)));p.append(c)}
+}
+async function startMock(k,scope,len){
+ if(!keyNow()){mock={err:"Add your API key in Settings first."};render();return}
+ mock={busy:true};render();
+ try{const c=SUB[k],tp=scope==="full"?FULL[c.tk]:cur.t[c.tk];
+  const qs=(await Promise.all((prov()==="g"?[1]:[1,2]).map(i=>callApi(mcqPrompt(k,tp,prov()==="g"?30:15,i))))).flat().filter(x=>x&&x.q&&Array.isArray(x.o)&&x.o.length===4&&Number.isInteger(x.a)&&x.a>=0&&x.a<4);
+  if(qs.length<10)throw new Error("Too few questions came back, please retry.");
+  mock={k,scope,qs,ans:{},len,end:Date.now()+len*60000,done:false};
+ }catch(e){mock={err:e.message||"Could not start the mock. Try again."}}
+ render();
+}
+function tickMock(){const m=mock;if(!m||!m.qs||m.done)return;const l=m.end-Date.now();if(l<=0){submitMock(true);return}const e=$("#mtime");if(e)e.textContent=fmt(l)+" left"}
+function mockRun(p){
+ const m=mock,cnt=()=>Object.values(m.ans).filter(v=>v!=null).length+" of "+m.qs.length+" answered";
+ const info=h("div",{class:"mut"},cnt());
+ p.append(h("div",{class:"card"},h("b",{id:"mtime"},fmt(m.end-Date.now())+" left"),info,h("p",{},h("button",{class:"btn",onclick:()=>submitMock(false)},"Submit"))));
+ m.qs.forEach((q,i)=>{const box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("button",{class:"opt"+(m.ans[i]===j?" sel":""),onclick:()=>{m.ans[i]=m.ans[i]===j?undefined:j;box.querySelectorAll(".opt").forEach((x,n)=>x.classList.toggle("sel",m.ans[i]===n));info.textContent=cnt()}},"ABCD"[j]+". "+o)));
+  p.append(box)});
+}
+function submitMock(auto){
+ const m=mock;if(!m||m.done)return;let r=0,w=0,s=0;const topics={};
+ m.qs.forEach((q,i)=>{const a=m.ans[i],t=(q.t||"General").slice(0,40),x=topics[t]||(topics[t]=[0,0]);x[1]++;
+  if(a==null)s++;else if(a===q.a){r++;x[0]++}else{w++;addWrong(m.k,q)}});
+ const score=r-0.25*w,mins=Math.min(m.len,Math.round((Date.now()-(m.end-m.len*60000))/60000));
+ const all=ls("ca-mocks",[]);m.prev=all.filter(x=>x.k===m.k&&x.scope===m.scope).pop();
+ all.push({date:today,k:m.k,scope:m.scope,score,max:m.qs.length,r,w,mins});lsSet("ca-mocks",all);
+ m.done=true;m.res={r,w,s,score,topics,mins};render();
+}
+function mockResult(p){
+ const m=mock,x=m.res;
+ const c=h("div",{class:"card"},h("b",{},"Score "+x.score.toFixed(2)+" / "+m.qs.length),h("div",{},x.r+" right · "+x.w+" wrong · "+x.s+" skipped · "+x.mins+" min"));
+ if(m.prev)c.append(h("div",{class:"mut"},"Previous mock of this type: "+m.prev.score.toFixed(2)+" / "+m.prev.max+" ("+(x.score>=m.prev.score?"up ":"down ")+Math.abs(x.score-m.prev.score).toFixed(2)+")"));
+ c.append(h("div",{class:"mut"},"Wrong answers were added to your Redo notebook."),h("p",{},h("button",{class:"btn alt",onclick:()=>{mock=null;render()}},"New mock")));
+ p.append(c);
+ const tc=h("div",{class:"card"},h("b",{},"By topic"));
+ Object.entries(x.topics).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]).forEach(([t,v])=>tc.append(h("div",{style:"margin-top:6px;font-size:14px"},t+": "+v[0]+" of "+v[1])));
+ p.append(tc);
+ m.qs.forEach((q,i)=>{const a=m.ans[i],box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)+(a==null?" · skipped":a===q.a?" · right":" · wrong")),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("div",{class:"opt"+(j===q.a?" ok":j===a?" bad":"")},"ABCD"[j]+". "+o)));
+  if(q.w)box.append(h("div",{class:"why"},q.w));p.append(box)});
+}
+function histCard(){
+ const c=h("div",{class:"card"},h("b",{},"Past days"),h("div",{class:"mut"},"Tap a date to reopen its questions and answers."));
+ const ds=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("ca-practice-"))ds.push(k.slice(12))}}catch(e){}
+ ds.sort().reverse().slice(0,30).forEach(d=>c.append(h("button",{class:"opt",onclick:()=>{st=load(d);cur=topicsFor(d);$("#dt").value=d;DB={};tab="maths";render()}},d)));
+ if(!ds.length)c.append(h("p",{class:"mut"},"No saved days yet."));
+ return c;
+}
+function backupCard(){
+ const ta=h("textarea",{rows:"4",placeholder:"Paste a backup here to restore",style:INP}),msg=h("p",{class:"mut"},"");
+ return h("div",{class:"card"},h("b",{},"Backup and restore"),h("p",{class:"mut"},"Export shares your progress as text. Save it somewhere safe. Your API key is not included."),
+  h("button",{class:"btn alt",onclick:()=>{const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("ca-")&&k!=="ca-key")o[k]=localStorage.getItem(k)}}catch(e){}const t=JSON.stringify(o);ta.value=t;if(window.AndroidBridge)AndroidBridge.share(t);msg.textContent="Backup ready."}},"Export")," ",
+  h("button",{class:"btn",onclick:()=>{try{const o=JSON.parse(ta.value);for(const k in o)if(k.startsWith("ca-")&&k!=="ca-key")localStorage.setItem(k,o[k]);st=load(st.date);msg.textContent="Restored "+Object.keys(o).length+" items."}catch(e){msg.textContent="That backup could not be read."}}},"Restore"),ta,msg);
+}
+function pushWidget(){
+ if(!window.AndroidBridge||typeof AndroidBridge.saveWidget!=="function"||st.date!==today)return;
+ const t="Today’s topics\nAccounts: "+cur.t.acc+"\nLaw: "+cur.t.law+"\nQuant: "+cur.t.quant+"\nEconomics: "+cur.t.eco+"\nStreak: "+streak()+" days";
+ if(t!==lastW){lastW=t;AndroidBridge.saveWidget(t)}
+}
+function prov(){return ls("ca-prov","g")}
+function keyNow(){return prov()==="g"?ls("ca-gkey",""):ls("ca-key","")}
+function cleanJ(t){return t.replace(/```json|```/g,"").trim()}
+async function gemini(p,json){
+ const m=ls("ca-gmodel","gemini-flash-latest"),cfg={maxOutputTokens:16000};if(json)cfg.responseMimeType="application/json";
+ const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent?key="+encodeURIComponent(ls("ca-gkey","")),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:p}]}],generationConfig:cfg})});
+ if(!r.ok){let msg="";try{msg=(await r.json()).error.message}catch(e){}
+  const bad=r.status===403||(r.status===400&&/key/i.test(msg));
+  const e=new Error(bad?"Gemini key was rejected. Check it in Settings.":r.status===429?"Free limit reached for now. Wait a minute, or try again tomorrow.":r.status===404?"Model name not found. Change it in Settings.":(msg||"Request failed ("+r.status+")"));
+  e.code=r.status===429?"rate_limited":bad?"not_granted":"http";throw e}
+ const d=await r.json();
+ return (((d.candidates||[])[0]||{}).content||{parts:[]}).parts.map(x=>x.text||"").join("").trim();
+}
+function provCard(){
+ const s=h("select",{style:INP},h("option",{value:"g"},"Google Gemini (free)"),h("option",{value:"c"},"Claude (paid API)"));s.value=prov();
+ const k=h("input",{type:"password",placeholder:"Gemini API key",value:ls("ca-gkey",""),style:INP}),m=h("input",{type:"text",value:ls("ca-gmodel","gemini-flash-latest"),style:INP}),msg=h("p",{class:"mut"},"");
+ return h("div",{class:"card"},h("b",{},"Question source"),h("p",{},s),h("div",{class:"mut"},"Free option: create a Gemini key at aistudio.google.com, no card needed. Free limits apply, and Google may use free-tier requests to improve its products."),h("p",{},k),h("div",{class:"mut"},"Model (change it if you see “model not found”)"),h("p",{},m),h("button",{class:"btn",onclick:()=>{lsSet("ca-prov",s.value);lsSet("ca-gkey",k.value.trim());lsSet("ca-gmodel",m.value.trim()||"gemini-flash-latest");msg.textContent="Saved."}},"Save"),msg);
+}
+let gbusy=false,gerr="",gt=null,lastP="";
+function weakLog(t,ok){const w=ls("ca-weak",{}),x=w[t]||[0,0];x[1]++;if(!ok)x[0]++;w[t]=x;lsSet("ca-weak",w)}
+function gsvg(g){
+ const NS="http://www.w3.org/2000/svg",s=document.createElementNS(NS,"svg");
+ s.setAttribute("viewBox","0 0 300 220");s.style.cssText="width:100%;max-width:420px;display:block;margin:6px auto;color:var(--fg)";
+ const X=v=>40+v*24,Y=v=>180-v*17,cl=v=>Math.max(0,Math.min(10,+v||0)),
+ mk=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;s.append(e);return e};
+ mk("path",{d:"M40,10 L40,180 L282,180",fill:"none",stroke:"currentColor","stroke-width":1.5});
+ mk("text",{x:160,y:208,"text-anchor":"middle","font-size":11,fill:"currentColor"},g.xl||"Quantity");
+ mk("text",{x:12,y:95,"text-anchor":"middle","font-size":11,fill:"currentColor",transform:"rotate(-90 12 95)"},g.yl||"Price");
+ const cols=["#2f5fd0","#c23b2e","#1f8a4c","#b8860b"];
+ (g.curves||[]).forEach((c,i)=>{const p=(c.p||[]).map(q=>[cl(q[0]),cl(q[1])]);if(p.length<2)return;
+  mk("polyline",{points:p.map(q=>X(q[0])+","+Y(q[1])).join(" "),fill:"none",stroke:cols[i%4],"stroke-width":2.5,"stroke-linejoin":"round"});
+  const e=p[p.length-1];mk("text",{x:Math.min(X(e[0])+4,284),y:Y(e[1])-4,"font-size":12,"font-weight":600,fill:cols[i%4]},c.n||"")});
+ (g.pts||[]).forEach(q=>{const x=cl(q.x),y=cl(q.y);
+  mk("line",{x1:X(x),y1:Y(y),x2:X(x),y2:180,stroke:"currentColor","stroke-dasharray":"3 3","stroke-width":1});
+  mk("line",{x1:40,y1:Y(y),x2:X(x),y2:Y(y),stroke:"currentColor","stroke-dasharray":"3 3","stroke-width":1});
+  mk("circle",{cx:X(x),cy:Y(y),r:4,fill:"currentColor"});mk("text",{x:X(x)+6,y:Y(y)-6,"font-size":12,fill:"currentColor"},q.n||"")});
+ return s;
+}
+function graphPrompt(){
+ return `You are an ICAI CA Foundation question setter. Subject: Business Economics. Today's topics: ${cur.t.eco}. Write 5 MCQs where each question is based on a simple graph that you describe as data (demand and supply, costs, production, etc., matched to the topics; if the topic does not suit graphs, use the nearest graphable concept). Return the graph as g = {"xl":"x label","yl":"y label","curves":[{"n":"D","p":[[x,y],[x,y]]}],"pts":[{"n":"E","x":5,"y":5}]}. All coordinates must be between 0 and 10. Straight curves need 2 points, curved or U-shaped ones 6 to 8 points. The graph must match the question and the correct answer must be readable from it. Each question has exactly 4 options. Difficulty: ${diff()}. Plain text only. Random seed: ${Math.random().toString(36).slice(2,8)}.\nReturn ONLY a JSON array: [{"q":"question","o":["A","B","C","D"],"a":0,"w":"short explanation","t":"short topic name","g":{}}] where a is the 0-based index of the correct option.`}
+async function genGraphs(){
+ if(!keyNow()){gerr="Add your API key in Settings first.";render();return}
+ gbusy=true;gerr="";render();
+ try{const v=await callApi(graphPrompt());if(!Array.isArray(v))throw new Error("Unexpected reply, please retry.");
+  const ok=v.filter(x=>x&&x.q&&Array.isArray(x.o)&&x.o.length===4&&Number.isInteger(x.a)&&x.a>=0&&x.a<4&&x.g&&Array.isArray(x.g.curves));
+  if(!ok.length)throw new Error("No usable graph questions came back, please retry.");
+  lsSet("ca-graph-"+st.date,ok)}catch(e){gerr=e.message||"Could not make graph questions."}
+ gbusy=false;render();
+}
+function graphPanel(p){
+ const qs=ls("ca-graph-"+st.date,[]);
+ p.append(h("div",{class:"card"},h("button",{class:"btn",onclick:()=>{if(!gbusy)genGraphs()}},gbusy?"Drawing graphs…":(qs.length?"Make new graph questions":"Make 5 graph questions")),h("div",{class:"mut",style:"margin-top:6px"},"Economics questions based on a drawn graph, from today’s topics."),gerr?h("p",{class:"err"},gerr):null));
+ qs.forEach((q,i)=>{const box=h("div",{class:"card"},h("div",{class:"n"},"Graph question "+(i+1)),gsvg(q.g),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("button",{class:"opt",onclick:()=>{if(box.querySelector(".opt").disabled)return;
+   box.querySelectorAll(".opt").forEach((b,n)=>{b.disabled=true;if(n===q.a)b.classList.add("ok");else if(n===j)b.classList.add("bad")});
+   box.append(h("div",{class:"why"},(j===q.a?"Correct. ":"Wrong. ")+(q.w||"")));weakLog(q.t||"Graphs",j===q.a)}},"ABCD"[j]+". "+o)));
+  p.append(box)});
+}
+function heatCard(){
+ const rows=Object.entries(ls("ca-weak",{})).filter(([t])=>t.length<=45);
+ const c=h("div",{class:"card"},h("b",{},"Topic heat map"),h("div",{class:"mut"},"Green: 80% or more right. Yellow: 60 to 79%. Red: below 60%. A dashed border means fewer than 3 attempts."));
+ if(!rows.length){c.append(h("p",{class:"mut"},"Answer some MCQs and your topics will appear here."));return c}
+ const g=h("div",{style:"display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px"});
+ rows.sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]).forEach(([t,x])=>{const acc=Math.round(100*(x[1]-x[0])/x[1]),bg=acc>=80?"#1f8a4c":acc>=60?"#b8860b":"#c23b2e";
+  g.append(h("div",{style:"background:"+bg+";color:#fff;border-radius:10px;padding:8px;font-size:13px;"+(x[1]<3?"border:2px dashed #fff;":"")},h("b",{},t),h("div",{},acc+"% · "+x[1]+" tried")))});
+ c.append(g);return c;
+}
+async function startGT(k){
+ if(!keyNow()){gt={err:"Add your API key in Settings first."};render();return}
+ gt={busy:true};render();
+ try{const c=SUB[k],qs=(await callApi(mcqPrompt(k,cur.t[c.tk],10,1))).filter(x=>x&&x.q&&Array.isArray(x.o)&&x.o.length===4&&Number.isInteger(x.a)&&x.a>=0&&x.a<4);
+  if(qs.length<5)throw new Error("Too few questions came back, please retry.");
+  gt={k,qs,ans:{},guess:{},done:false};
+ }catch(e){gt={err:e.message||"Could not start. Try again."}}
+ render();
+}
+function submitGT(){
+ const g=gt;if(!g||g.done)return;const r={sr:0,sw:0,gr:0,gw:0,sk:0};
+ g.qs.forEach((q,i)=>{const a=g.ans[i];if(a==null){r.sk++;return}const ok=a===q.a;if(g.guess[i]){ok?r.gr++:r.gw++}else{ok?r.sr++:r.sw++}if(!ok)addWrong(g.k,q)});
+ g.res=r;g.done=true;
+ const t=ls("ca-guess",{});for(const k in r)t[k]=(t[k]||0)+r[k];lsSet("ca-guess",t);render();
+}
+function gtPanel(p){
+ if(gt&&gt.busy){p.append(h("div",{class:"card mut"},"Writing 10 questions…"));return}
+ if(gt&&gt.qs)return gt.done?gtResult(p):gtRun(p);
+ const kS=h("select",{style:INP},h("option",{value:"maths"},"Maths"),h("option",{value:"eco"},"Economics")),t=ls("ca-guess",{});
+ p.append(h("div",{class:"card"},h("b",{},"Guess or skip trainer"),h("div",{class:"mut"},"10 questions on today’s topics with negative marking. Mark the ones you are guessing, then see whether guessing helps or hurts you."),h("p",{},kS),h("button",{class:"btn",onclick:()=>startGT(kS.value)},"Start"),gt&&gt.err?h("p",{class:"err"},gt.err):null));
+ if((t.gr||0)+(t.gw||0)>0)p.append(h("div",{class:"card"},h("b",{},"All sessions"),h("div",{},"Guesses: "+(t.gr||0)+" right, "+(t.gw||0)+" wrong, net "+((t.gr||0)-0.25*(t.gw||0)).toFixed(2)+" marks")));
+}
+function gtRun(p){
+ const g=gt,n=()=>Object.values(g.ans).filter(v=>v!=null).length,cnt=()=>n()+" answered, "+(g.qs.length-n())+" skipped";
+ const info=h("div",{class:"mut"},cnt());
+ p.append(h("div",{class:"card"},h("b",{},"Right +1 · wrong −0.25 · skip 0"),info,h("div",{class:"mut"},"Leave a question unanswered to skip it. Switch Guessing on when you are not sure."),h("p",{},h("button",{class:"btn",onclick:submitGT},"Finish"))));
+ g.qs.forEach((q,i)=>{const box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("button",{class:"opt"+(g.ans[i]===j?" sel":""),onclick:()=>{g.ans[i]=g.ans[i]===j?undefined:j;box.querySelectorAll(".opt").forEach((x,m)=>x.classList.toggle("sel",g.ans[i]===m));info.textContent=cnt()}},"ABCD"[j]+". "+o)));
+  const gb=h("button",{class:"btn alt",style:"margin-top:8px",onclick:()=>{g.guess[i]=!g.guess[i];gb.textContent=g.guess[i]?"Guessing: on":"Guessing: off"}},"Guessing: off");
+  box.append(gb);p.append(box)});
+}
+function gtResult(p){
+ const r=gt.res,sc=r.sr+r.gr-0.25*(r.sw+r.gw),gn=r.gr-0.25*r.gw,gc=r.gr+r.gw;
+ const verdict=gc<3?"Too few guesses to judge. Try again.":gn>0?"Your guesses gained marks this time.":"Your guesses cost marks this time. Skip unless you can rule out an option.";
+ p.append(h("div",{class:"card"},h("b",{},"Score "+sc.toFixed(2)+" / "+gt.qs.length),
+  h("div",{},"Sure answers: "+r.sr+" right, "+r.sw+" wrong"),
+  h("div",{},"Guesses: "+r.gr+" right, "+r.gw+" wrong, "+(gn>=0?"+":"")+gn.toFixed(2)+" marks"),
+  h("div",{},"Skipped: "+r.sk),h("p",{},verdict),
+  h("p",{class:"mut"},"Break-even: a guess pays off if you are right more than 1 time in 5. A blind guess among 4 options is worth about +0.06 marks on average, after ruling out one option about +0.17, after ruling out two about +0.38."),
+  h("div",{class:"mut"},"Wrong answers were added to your Redo notebook."),
+  h("p",{},h("button",{class:"btn alt",onclick:()=>{gt=null;render()}},"New set"))));
+ gt.qs.forEach((q,i)=>{const a=gt.ans[i],box=h("div",{class:"card"},h("div",{class:"n"},"Question "+(i+1)+(a==null?" · skipped":a===q.a?" · right":" · wrong")+(gt.guess[i]&&a!=null?" · guess":"")),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("div",{class:"opt"+(j===q.a?" ok":j===a?" bad":"")},"ABCD"[j]+". "+o)));
+  if(q.w)box.append(h("div",{class:"why"},q.w));p.append(box)});
+}
+function pushPool(){
+ if(!window.AndroidBridge||typeof AndroidBridge.savePool!=="function"||st.date!==today)return;
+ const pool=[];
+ ls("ca-wrong",[]).filter(x=>x.due<=today).slice(0,10).forEach(x=>pool.push({q:x.q.q,o:x.q.o,a:x.q.a,w:x.q.w||""}));
+ for(const k of ["maths","eco"])(st.data[k]||[]).slice(0,10).forEach(q=>pool.push({q:q.q,o:q.o,a:q.a,w:q.w||""}));
+ const t=JSON.stringify(pool);if(t!==lastP){lastP=t;AndroidBridge.savePool(t)}
+}
+function qnCard(){
+ const tm=h("input",{type:"time",value:ls("ca-qn","08:00"),style:INP}),msg=h("p",{class:"mut"},"");
+ const ok=()=>window.AndroidBridge&&typeof AndroidBridge.setQuestionAlarm==="function";
+ return h("div",{class:"card"},h("b",{},"Daily question notification"),h("p",{class:"mut"},"One question from today’s practice or your Redo notebook, with a Show answer button. Generate practice at least once first."),tm,
+  h("p",{},h("button",{class:"btn",onclick:()=>{if(!ok()){msg.textContent="This needs the updated Android app.";return}const [a,b]=tm.value.split(":");AndroidBridge.setQuestionAlarm(+a,+b);lsSet("ca-qn",tm.value);msg.textContent="Set for "+tm.value+" every day."}},"Set")," ",
+  h("button",{class:"btn alt",onclick:()=>{if(ok()){AndroidBridge.cancelQuestionAlarm();msg.textContent="Turned off."}}},"Turn off")),msg);
+}
+let tbusy=false,terr="";
+const SJ={acc:"Accounts",law:"Law",quant:"Quant",eco:"Economics",test:"Tests and recap",other:"Other"};
+const TT=[["05:00","07:00","Accounts: lecture or reading, then writing","acc"],["07:00","07:20","Breakfast",""],["07:20","09:00","Law: concepts and notes","law"],["09:00","11:00","Accounts practice","acc"],["11:00","11:05","Break",""],["11:05","13:05","Law notes or case studies","law"],["13:05","13:25","Lunch",""],["13:25","15:25","Quant","quant"],["15:25","15:30","Break",""],["15:30","17:30","Economics","eco"],["17:30","17:35","Break",""],["17:35","19:35","Weakest subject of the day","weak"],["19:35","19:55","Dinner",""],["19:55","21:00","Quant formulas and MCQs","quant"],["21:00","21:30","Travel home",""],["21:30","23:00","Daily test: written Law and Accounts, MCQs in Economics and Maths","test"],["23:00","24:00","Recap and plan for next day","test"]];
+const toMin=t=>{const x=t.split(":");return +x[0]*60+ +x[1]};
+const f12=t=>{const x=t.split(":"),a=+x[0];return (a%12||12)+":"+x[1]+(a%24<12?" am":" pm")};
+function ttPanel(p){
+ const n=new Date(),nm=n.getHours()*60+n.getMinutes(),ws=ls("ca-wsub",{}),wk=ws[today]||"acc";
+ const sel=h("select",{style:INP},...["acc","law","quant","eco"].map(k=>h("option",{value:k},SJ[k])));sel.value=wk;
+ sel.onchange=()=>{const x=ls("ca-wsub",{});x[today]=sel.value;lsSet("ca-wsub",x);render()};
+ p.append(h("div",{class:"card"},h("b",{},"Today’s timetable"),h("div",{class:"mut"},"Tap Start on a block to run its timer. The time goes into your hours chart in Progress."),h("p",{class:"mut"},"Subject for the weakest-subject block today:"),sel));
+ TT.forEach(([a,b,label,sj])=>{
+  const s=toMin(a),e=toMin(b),isNow=nm>=s&&nm<e,sub=sj==="weak"?wk:sj;
+  const row=h("div",{class:"card",style:isNow?"border:2px solid var(--ac)":""},h("div",{class:"n"},f12(a)+" to "+f12(b)+(isNow?" · now":"")),h("div",{},label+(sj==="weak"?" ("+SJ[wk]+")":"")));
+  if(sub){const len=Math.max(1,isNow?e-nm:e-s);row.append(h("button",{class:"btn alt",style:"margin-top:8px",onclick:()=>{if(!tmr)tmr={end:Date.now()+len*60000,len,focus:false,subj:sub};tab="timer";render()}},"Start "+len+" min"))}
+  p.append(row)});
+}
+function hoursCard(){
+ const ss=ls("ca-ssub",{}),tot={};let all=0;
+ for(let i=0;i<7;i++){const o=ss[addDays(today,-i)]||{};for(const k in o){tot[k]=(tot[k]||0)+o[k];all+=o[k]}}
+ const c=h("div",{class:"card"},h("b",{},"Hours per subject, last 7 days"));
+ if(!all){c.append(h("p",{class:"mut"},"Run a timer from the Today or Timer tab and your hours will appear here."));return c}
+ Object.keys(SJ).filter(k=>tot[k]).sort((a,b)=>tot[b]-tot[a]).forEach(k=>{const pc=Math.round(100*tot[k]/all);
+  c.append(h("div",{style:"margin-top:8px;font-size:14px"},SJ[k]+": "+(tot[k]/60).toFixed(1)+" h ("+pc+"%)",h("div",{style:"height:8px;border-radius:4px;background:var(--bd);margin-top:3px"},h("div",{style:"height:8px;border-radius:4px;background:var(--ac);width:"+pc+"%"}))))});
+ c.append(h("div",{class:"mut",style:"margin-top:8px"},"Total "+(all/60).toFixed(1)+" h"));return c;
+}
+function tfPrompt(tp){
+ return `You are an ICAI CA Foundation question setter. Subject: Principles and Practice of Accounting. Today's topics: ${tp}. Write 10 true or false statements on these topics, about half true and half false, in ICAI exam style (a concept, a rule, a treatment, or a small numerical fact). Difficulty: ${diff()}. Give each a short explanation of why it is true or false. Plain text only. Random seed: ${Math.random().toString(36).slice(2,8)}.\nReturn ONLY a JSON array: [{"s":"statement","v":true,"w":"explanation","t":"short topic name"}].`}
+async function tfData(tp){
+ const v=await callApi(tfPrompt(tp));if(!Array.isArray(v))throw new Error("Unexpected reply, please retry.");
+ return v.filter(x=>x&&x.s&&(typeof x.v==="boolean"||x.v==="true"||x.v==="false")).map(x=>({q:x.s,o:["True","False"],a:(x.v===true||x.v==="true")?0:1,w:x.w||"",t:x.t||"Accounts true/false"}));
+}
+async function genTF(){
+ if(!keyNow()){terr="Add your API key in Settings first.";render();return}
+ tbusy=true;terr="";render();
+ try{const q=await tfData(cur.t.acc);if(!q.length)throw new Error("No usable statements came back, please retry.");lsSet("ca-tf-"+st.date,q)}catch(e){terr=e.message||"Could not make statements."}
+ tbusy=false;render();
+}
+function tfAnswered(q,ok){weakLog(q.t||"Accounts true/false",ok);if(!ok)addWrong("acc",q);const d=ls("ca-days",{});d[st.date]=(d[st.date]||0)+1;lsSet("ca-days",d)}
+function tfPanel(p){
+ const qs=ls("ca-tf-"+st.date,[]);
+ p.append(h("div",{class:"card"},h("button",{class:"btn",onclick:()=>{if(!tbusy)genTF()}},tbusy?"Writing statements…":(qs.length?"Make new statements":"Make 10 true or false")),h("div",{class:"mut",style:"margin-top:6px"},"Accounts statements from today’s topic: "+cur.t.acc),terr?h("p",{class:"err"},terr):null));
+ qs.forEach((q,i)=>{const box=h("div",{class:"card"},h("div",{class:"n"},"Statement "+(i+1)),h("p",{class:"q"},q.q));
+  q.o.forEach((o,j)=>box.append(h("button",{class:"opt",onclick:()=>{if(box.querySelector(".opt").disabled)return;const ok=j===q.a;
+   box.querySelectorAll(".opt").forEach((b,m)=>{b.disabled=true;if(m===q.a)b.classList.add("ok");else if(m===j)b.classList.add("bad")});
+   box.append(h("div",{class:"why"},(ok?"Correct. ":"Wrong. ")+(q.w||"")));tfAnswered(q,ok)}},o)));
+  p.append(box)});
+}
+const okQ=x=>x&&x.q&&Array.isArray(x.o)&&x.o.length===4&&Number.isInteger(x.a)&&x.a>=0&&x.a<4;
+const nap=ms=>new Promise(r=>setTimeout(r,ms));
+async function prepDay(d){
+ const tp=topicsFor(d).t,s=load(d);
+ for(const k of ["acc","maths","eco","law"]){
+  if(s.data[k])continue;const c=SUB[k];
+  const out=c.kind==="mcq"?(await Promise.all((prov()==="g"?[1]:[1,2]).map(i=>callApi(mcqPrompt(k,tp[c.tk],prov()==="g"?30:15,i))))).flat().filter(okQ):(await callApi(wPrompt(k,tp[c.tk]))).filter(x=>x&&x.q&&x.a);
+  if(!out.length)continue;
+  s.data[k]=out;try{localStorage.setItem(key(d),JSON.stringify({data:s.data,sel:s.sel,rev:s.rev,tm:s.tm,notes:s.notes}))}catch(e){}
+  await nap(4000);
+ }
+ if(!ls("ca-tf-"+d,[]).length){try{lsSet("ca-tf-"+d,await tfData(tp.acc))}catch(e){}}
+ if(st.date===d){st=load(d);render()}
+}
+function prepCard(){
+ const tm=h("input",{type:"time",value:ls("ca-prep","02:00"),style:INP}),msg=h("p",{class:"mut"},"");
+ const ok=()=>window.AndroidBridge&&typeof AndroidBridge.setPrep==="function";
+ return h("div",{class:"card"},h("b",{},"Prepare overnight"),h("p",{class:"mut"},"Makes the next day’s questions at this time, so they are ready when you wake up. Needs internet and a battery that is not low. Android may run it a little later."),tm,
+  h("p",{},h("button",{class:"btn",onclick:()=>{if(!ok()){msg.textContent="This needs the updated Android app.";return}const a=tm.value.split(":");AndroidBridge.setPrep(+a[0],+a[1]);lsSet("ca-prep",tm.value);msg.textContent="On. Runs around "+tm.value+" every night."}},"Turn on")," ",
+  h("button",{class:"btn alt",onclick:()=>{if(ok()){AndroidBridge.cancelPrep();msg.textContent="Turned off."}}},"Turn off")," ",
+  h("button",{class:"btn alt",onclick:async()=>{if(!keyNow()){msg.textContent="Add your API key first.";return}msg.textContent="Preparing… keep the app open, this takes a few minutes.";try{const d=new Date().getHours()<12?today:addDays(today,1);await prepDay(d);msg.textContent="Ready for "+d+"."}catch(e){msg.textContent=e.message||"Could not prepare."}}},"Prepare now")),msg);
+}
+
+function attPresent(d){const a=ls("ca-att",{});return !!a[d]||(ls("ca-days",{})[d]||0)>0||(ls("ca-study",{})[d]||0)>0}
+let attM=null;
+function attPanel(p){
+ const a=ls("ca-att",{});if(!attM)attM=today.slice(0,7);
+ const [Y,M]=attM.split("-").map(Number),first=new Date(Y,M-1,1),dim=new Date(Y,M,0).getDate(),pad=n=>String(n).padStart(2,"0");
+ const mark=h("button",{class:"btn",onclick:()=>{const x=ls("ca-att",{});if(x[today])delete x[today];else x[today]=1;lsSet("ca-att",x);render()}},a[today]?"✓ Marked present today (tap to undo)":"Mark me present today");
+ let start=null;{const ks=Object.keys(a).concat(Object.keys(ls("ca-days",{})),Object.keys(ls("ca-study",{}))).sort();start=ks[0]||today}
+ let tot=0,pre=0,d=start;while(d<=today){tot++;if(attPresent(d))pre++;d=addDays(d,1)}
+ let cs=0;d=attPresent(today)?today:addDays(today,-1);while(attPresent(d)&&d>=start){cs++;d=addDays(d,-1)}
+ let best=0,run=0;d=start;while(d<=today){if(attPresent(d)){run++;best=Math.max(best,run)}else run=0;d=addDays(d,1)}
+ const pct=tot?Math.round(pre*100/tot):0;
+ const stat=(n,l)=>h("div",{style:"flex:1;min-width:90px;text-align:center"},h("div",{style:"font-size:22px;font-weight:700"},String(n)),h("div",{class:"mut",style:"font-size:12px"},l));
+ p.append(h("div",{class:"card"},h("b",{},"Attendance"),h("p",{class:"mut"},"A day counts as present when you tap the button, answer any question, or log study time."),mark,
+  h("div",{style:"display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"},stat(pct+"%","attendance"),stat(pre+"/"+tot,"days present"),stat(cs,"current streak"),stat(best,"best streak"))));
+ const grid=h("div",{style:"display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px"});
+ ["M","T","W","T","F","S","S"].forEach(x=>grid.append(h("div",{class:"mut",style:"text-align:center;font-size:12px"},x)));
+ for(let i=0;i<(first.getDay()+6)%7;i++)grid.append(h("div"));
+ for(let n=1;n<=dim;n++){const ds=Y+"-"+pad(M)+"-"+pad(n),on=attPresent(ds),fut=ds>today,isT=ds===today;
+  grid.append(h("div",{style:"text-align:center;padding:8px 0;border-radius:8px;font-size:13px;border:1px solid "+(isT?"var(--ac)":"var(--bd)")+";background:"+(on?"var(--okbg)":(fut?"transparent":"var(--badbg)"))+";color:"+(on?"var(--ok)":(fut?"var(--mut)":"var(--bad)"))},String(n)))}
+ const mv=dlt=>{const t=new Date(Y,M-1+dlt,1);attM=t.getFullYear()+"-"+pad(t.getMonth()+1);render()};
+ p.append(h("div",{class:"card"},h("div",{style:"display:flex;justify-content:space-between;align-items:center"},h("button",{class:"btn alt",onclick:()=>mv(-1)},"‹"),h("b",{},first.toLocaleDateString("en-IN",{month:"long",year:"numeric"})),h("button",{class:"btn alt",onclick:()=>mv(1)},"›")),grid,
+  h("p",{class:"mut",style:"font-size:12px"},"Green = present, red = absent, outlined = today.")));
+}
+function render(){
+ $("#when").textContent=new Date(st.date+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"short",year:"numeric"})+" · "+cur.label;
+ const tp=$("#tp");tp.replaceChildren(...[["Accounts","acc"],["Law","law"],["Quant","quant"],["Economics","eco"]].map(([n,k])=>h("div",{},h("b",{},n),cur.t[k])));
+ const anyBusy=Object.values(busy).some(Boolean);
+ $("#go").textContent=anyBusy?"Generating…":(Object.values(st.data).some(Boolean)?"Regenerate":"Generate today’s practice");
+ $("#go").disabled=anyBusy;stk();pushWidget();pushPool();
+ $("#tabs").replaceChildren(...ORDER.map(k=>{const c=SUB[k],d=st.data[k];
+  const prog=d?(c.kind==="mcq"?" "+Object.keys(st.sel[k]).length+"/"+d.length:" "+d.length):"";
+  return h("button",{class:"tab"+(tab===k?" on":""),onclick:()=>{tab=k;render()}},c.name+prog)}),h("button",{class:"tab"+(tab==="weak"?" on":""),onclick:()=>{tab="weak";render()}},"Weak topics"),...[["redo","Redo"],["mock","Mock"],["today","Today"],["tf","T/F"],["guess","Guess"],["graph","Graphs"],["cards","Cards"],["timer","Timer"],["saved","Saved"],["plan","Plan"],["att","Attendance"],["prog","Progress"],["notes","Notes"],["set","Settings"]].map(([id,nm])=>h("button",{class:"tab"+(tab===id?" on":""),onclick:()=>{tab=id;render()}},nm)));
+ const p=$("#panel");p.replaceChildren();
+ if(tab==="weak"){weakPanel(p);return}
+ if(tab==="set"){p.append(provCard());setPanel(p);return}
+ if(tab==="plan"){planPanel(p);return}
+ if(tab==="att"){attPanel(p);return}
+ if(tab==="prog"){progPanel(p);p.append(hoursCard(),heatCard(),histCard());return}
+ if(tab==="notes"){notesPanel(p);return}
+ if(tab==="redo"){redoPanel(p);return}
+ if(tab==="mock"){mockPanel(p);return}
+ if(tab==="cards"){cardsPanel(p);return}
+ if(tab==="timer"){timerPanel(p);return}
+ if(tab==="saved"){savedPanel(p);return}
+ if(tab==="guess"){gtPanel(p);return}
+ if(tab==="graph"){graphPanel(p);return}
+ if(tab==="today"){ttPanel(p);return}
+ if(tab==="tf"){tfPanel(p);return}
+ if(err.all)p.append(h("p",{class:"err"},err.all));
+ const c=SUB[tab],d=st.data[tab];
+ if(busy[tab]){p.append(h("div",{class:"card mut"},"Writing "+c.n+" questions on today’s topics… this takes up to a minute."));return}
+ if(err[tab])p.append(h("div",{class:"card"},h("p",{class:"err"},err[tab]),h("button",{class:"btn alt",onclick:()=>retry(tab)},"Retry "+c.name)));
+ if(!d){if(!err[tab])p.append(h("div",{class:"card mut"},"No questions yet. Tap “Generate today’s practice” to get "+ORDER.map(x=>SUB[x].n+" "+SUB[x].name).join(", ")+"."));return}
+ if(c.kind==="mcq"){p.append(h("div",{class:"score",id:"score"}));score(tab);d.forEach((_,i)=>p.append(mcqCard(tab,i)))}
+ else d.forEach((_,i)=>p.append(wCard(tab,i)));
+}
+$("#dt").value=st.date;
+{const df=h("select",{id:"df",style:"padding:9px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg)"},h("option",{value:"easy"},"Easy"),h("option",{value:"exam level"},"Exam level"),h("option",{value:"tough"},"Tough"));
+df.value=ls("ca-diff","exam level");df.onchange=()=>lsSet("ca-diff",df.value);$("#dt").after(df)}
+$("#dt").onchange=e=>{const v=e.target.value;if(!v)return;st=load(v);cur=topicsFor(v);busy={};err={};DB={};render()};
+$("#go").onclick=genAll;
+setInterval(()=>{if(tab==="maths"||tab==="eco")score(tab)},1000);
+setInterval(()=>{tickTimer();tickMock()},1000);
+if(location.search.indexOf("prep=1")>=0){const d=new Date().getHours()<12?today:addDays(today,1);prepDay(d).catch(()=>{}).then(()=>{if(window.AndroidBridge&&typeof AndroidBridge.prepDone==="function")AndroidBridge.prepDone()})}
+render();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
